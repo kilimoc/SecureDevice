@@ -6,8 +6,15 @@
 package business;
 
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import sd.global.InputFormats;
+import sd.admin.DbConfig;
 
 
 /**
@@ -19,11 +26,17 @@ public class BusinessRegister extends javax.swing.JDialog {
     /**
      * Creates new form BusinessRegister
      */
+    DbConfig dbc=new DbConfig();
+    private Connection conn;
+    private PreparedStatement prepare;
+    
+    
     InputFormats inf=new InputFormats();
     public BusinessRegister(JFrame frame) {
         super(frame,true);
         initComponents();
         setLocationRelativeTo(null);
+        conn=dbc.getConnection();
         setIcon();
     }
 
@@ -55,7 +68,7 @@ public class BusinessRegister extends javax.swing.JDialog {
         jLabel9 = new javax.swing.JLabel();
         owner_Details = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        save = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -138,6 +151,12 @@ public class BusinessRegister extends javax.swing.JDialog {
 
         jLabel5.setText("Location");
 
+        b_l_no.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_l_noActionPerformed(evt);
+            }
+        });
+
         jLabel6.setText("KRA PIN");
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -210,12 +229,17 @@ public class BusinessRegister extends javax.swing.JDialog {
         jPanel4.setPreferredSize(new java.awt.Dimension(504, 40));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        jButton1.setBackground(new java.awt.Color(255, 255, 255));
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(0, 102, 51));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sd/images/save.png"))); // NOI18N
-        jButton1.setText("Save");
-        jPanel4.add(jButton1, new java.awt.GridBagConstraints());
+        save.setBackground(new java.awt.Color(255, 255, 255));
+        save.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        save.setForeground(new java.awt.Color(0, 102, 51));
+        save.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sd/images/save.png"))); // NOI18N
+        save.setText("Save");
+        save.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveActionPerformed(evt);
+            }
+        });
+        jPanel4.add(save, new java.awt.GridBagConstraints());
 
         jButton2.setBackground(new java.awt.Color(255, 255, 255));
         jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -351,6 +375,14 @@ public class BusinessRegister extends javax.swing.JDialog {
         inf.ControlInput(evt);
     }//GEN-LAST:event_phoneKeyTyped
 
+    private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
+        registerBusiness();
+    }//GEN-LAST:event_saveActionPerformed
+
+    private void b_l_noActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_l_noActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_b_l_noActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -368,7 +400,6 @@ public class BusinessRegister extends javax.swing.JDialog {
     private javax.swing.JTextField b_name;
     private javax.swing.JTextField f_name;
     private javax.swing.JTextField id_no;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -396,5 +427,58 @@ public class BusinessRegister extends javax.swing.JDialog {
     private javax.swing.JTextField l_name;
     private javax.swing.JPanel owner_Details;
     private javax.swing.JTextField phone;
+    private javax.swing.JButton save;
     // End of variables declaration//GEN-END:variables
+
+    private void registerBusiness() {
+        try {
+            PreparedStatement prepareprice=conn.prepareStatement("INSERT INTO business_owner VALUES (?,?,?,?)");
+            prepareprice.setString(1, f_name.getText());
+            prepareprice.setString(2, l_name.getText());
+            prepareprice.setString(3, id_no.getText());
+            prepareprice.setString(4, phone.getText());
+            
+            prepareprice.execute();
+            
+           
+            try{
+            prepare=conn.prepareStatement("INSERT INTO business_register VALUES (?,?,?,?,?)");
+           
+            prepare.setString(1, b_name.getText());
+            prepare.setString(2, b_l_no.getText());
+            prepare.setString(3, kra_pin.getText());
+            prepare.setString(4,b_location.getText());
+            prepare.setString(5, id_no.getText());
+            /*prepare.setBigDecimal(3, BigDecimal.valueOf(Double.parseDouble(buyingp)));
+            prepare.setString(4, imeicode);*/
+            //LOAD THE DEVICE PAYMENT 
+            prepare.execute();
+            
+            
+            JOptionPane.showMessageDialog(null, "Device Details Recorded Successfully","Secure Device Inc.",JOptionPane.INFORMATION_MESSAGE);
+            
+            
+            //Reset All textfields.
+            b_name.setText("");            
+            b_l_no.setText("");
+            kra_pin.setText("");
+            b_location.setText("");
+            
+            f_name.setText("");            
+            l_name.setText("");
+            id_no.setText("");
+            phone.setText("");
+            
+            }
+            catch(SQLException ex){
+                
+                
+            }
+            
+            
+//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        } catch (SQLException ex) {
+            Logger.getLogger(BusinessRegister.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

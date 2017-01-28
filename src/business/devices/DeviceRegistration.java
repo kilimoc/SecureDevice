@@ -5,7 +5,15 @@
  */
 package business.devices;
 
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import sd.admin.DbConfig;
 
 
 
@@ -18,11 +26,28 @@ public class DeviceRegistration extends javax.swing.JFrame {
     /**
      * Creates new form Sales
      */
+    DbConfig dbc=new DbConfig();
+    private Connection conn;
+    private PreparedStatement prepare;
+    RegisterDevice rdevice=new RegisterDevice();
+    //global variables
+    String dname="";
+    String manuf="";
+    String buyingp="";
+    String imeicode="";
+    String serialn="";
+    
     public DeviceRegistration() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        conn=dbc.getConnection();
         n_manufacturer.setVisible(false);
         nm_btn.setVisible(false);
+        
+        deviceCount.setText(String.valueOf(rdevice.getAlldevicesCount()));
+        getManufacturers();
+        
     }
 
     /**
@@ -40,22 +65,26 @@ public class DeviceRegistration extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
+        saveDevice = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        d_name = new javax.swing.JTextField();
         manufacturer_combo = new javax.swing.JComboBox<>();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        b_price = new javax.swing.JTextField();
+        imei = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         n_manufacturer = new javax.swing.JTextField();
         nm_btn = new javax.swing.JButton();
-        jTextField4 = new javax.swing.JTextField();
+        deviceCount = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        sn = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        deviceCount1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Device Registration");
@@ -76,7 +105,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(93, 93, 93)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(330, Short.MAX_VALUE))
+                .addContainerGap(340, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,7 +132,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(282, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -120,7 +149,12 @@ public class DeviceRegistration extends javax.swing.JFrame {
         jPanel6.setBackground(new java.awt.Color(139, 167, 112));
         jPanel6.setPreferredSize(new java.awt.Dimension(550, 40));
 
-        jButton3.setText("SAVE");
+        saveDevice.setText("SAVE");
+        saveDevice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveDeviceActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("CANCEL");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -134,10 +168,10 @@ public class DeviceRegistration extends javax.swing.JFrame {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(421, Short.MAX_VALUE)
+                .addContainerGap(431, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(saveDevice, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29))
         );
         jPanel6Layout.setVerticalGroup(
@@ -145,7 +179,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
+                    .addComponent(saveDevice)
                     .addComponent(jButton4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -160,7 +194,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
 
         jLabel6.setText("Buying Price");
 
-        jLabel7.setText("Units Bought");
+        jLabel7.setText("IMEI CODE");
 
         manufacturer_combo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---Select Manufacturer---" }));
         manufacturer_combo.addActionListener(new java.awt.event.ActionListener() {
@@ -169,15 +203,15 @@ public class DeviceRegistration extends javax.swing.JFrame {
             }
         });
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        b_price.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                b_priceActionPerformed(evt);
             }
         });
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        imei.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                imeiActionPerformed(evt);
             }
         });
 
@@ -195,20 +229,36 @@ public class DeviceRegistration extends javax.swing.JFrame {
             }
         });
 
-        jTextField4.setBackground(new java.awt.Color(255, 0, 255));
-        jTextField4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jTextField4.setForeground(new java.awt.Color(0, 102, 102));
-        jTextField4.setText("20");
-        jTextField4.setDisabledTextColor(new java.awt.Color(204, 0, 153));
-        jTextField4.setEnabled(false);
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        deviceCount.setBackground(new java.awt.Color(255, 0, 255));
+        deviceCount.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        deviceCount.setForeground(new java.awt.Color(0, 102, 102));
+        deviceCount.setDisabledTextColor(new java.awt.Color(204, 0, 153));
+        deviceCount.setEnabled(false);
+        deviceCount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                deviceCountActionPerformed(evt);
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tahoma", 3, 10)); // NOI18N
         jLabel3.setText("<html><u>Total Registered Units</u></html>");
+
+        jLabel8.setText("S.NO");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 3, 10)); // NOI18N
+        jLabel9.setText("Device Count");
+
+        deviceCount1.setBackground(new java.awt.Color(255, 0, 255));
+        deviceCount1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        deviceCount1.setForeground(new java.awt.Color(0, 102, 102));
+        deviceCount1.setText("0");
+        deviceCount1.setDisabledTextColor(new java.awt.Color(204, 0, 153));
+        deviceCount1.setEnabled(false);
+        deviceCount1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deviceCount1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -216,42 +266,57 @@ public class DeviceRegistration extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(160, 160, 160)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
-                    .addComponent(manufacturer_combo, 0, 204, Short.MAX_VALUE)
-                    .addComponent(jTextField2)
-                    .addComponent(jTextField3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(n_manufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nm_btn)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(b_price, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(d_name)
+                            .addComponent(manufacturer_combo, 0, 204, Short.MAX_VALUE)
+                            .addComponent(imei)
+                            .addComponent(sn))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(n_manufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nm_btn)))
+                .addContainerGap(42, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(deviceCount1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deviceCount, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(deviceCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(34, 34, 34)
+                    .addComponent(d_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deviceCount1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(manufacturer_combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,13 +325,17 @@ public class DeviceRegistration extends javax.swing.JFrame {
                     .addComponent(nm_btn))
                 .addGap(24, 24, 24)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
+                    .addComponent(sn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(132, Short.MAX_VALUE))
+                    .addComponent(imei, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(b_price, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(102, 102, 102))
         );
 
         jPanel5.add(jPanel3, java.awt.BorderLayout.CENTER);
@@ -284,13 +353,13 @@ public class DeviceRegistration extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_manufacturer_comboActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void b_priceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_priceActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_b_priceActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void imeiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imeiActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_imeiActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         n_manufacturer.setVisible(true);
@@ -318,9 +387,29 @@ public class DeviceRegistration extends javax.swing.JFrame {
         
     }//GEN-LAST:event_nm_btnActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void deviceCountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceCountActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_deviceCountActionPerformed
+
+    private void saveDeviceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveDeviceActionPerformed
+        //ensure no empty fields
+       dname=d_name.getText();
+        manuf=manufacturer_combo.getSelectedItem().toString();
+        buyingp=b_price.getText();
+       imeicode=imei.getText();
+       serialn=sn.getText();
+        if(dname.equals("") || manuf.equals("") && buyingp.equals("") && imeicode.equals("") && serialn.equals("")){
+            JOptionPane.showMessageDialog(null, "All Fields Must be Filled To Save","Secure Device Inc.",JOptionPane.WARNING_MESSAGE);
+        }
+        else{
+            registerDevice();
+            
+        }
+    }//GEN-LAST:event_saveDeviceActionPerformed
+
+    private void deviceCount1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceCount1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deviceCount1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -359,8 +448,12 @@ public class DeviceRegistration extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField b_price;
+    private javax.swing.JTextField d_name;
+    private javax.swing.JTextField deviceCount;
+    private javax.swing.JTextField deviceCount1;
+    private javax.swing.JTextField imei;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -369,17 +462,79 @@ public class DeviceRegistration extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JComboBox<String> manufacturer_combo;
     private javax.swing.JTextField n_manufacturer;
     private javax.swing.JButton nm_btn;
+    private javax.swing.JButton saveDevice;
+    private javax.swing.JTextField sn;
     // End of variables declaration//GEN-END:variables
+
+    private void registerDevice() {
+        try {
+            prepare=conn.prepareStatement("INSERT INTO device_info VALUES (?,?,?,?)");
+           
+            prepare.setString(1, serialn);
+            prepare.setString(2, imeicode);
+            prepare.setString(3, dname);
+            prepare.setString(4, manuf);
+            /*prepare.setBigDecimal(3, BigDecimal.valueOf(Double.parseDouble(buyingp)));
+            prepare.setString(4, imeicode);*/
+            //LOAD THE DEVICE PAYMENT 
+            prepare.execute();
+            try{
+            PreparedStatement prepareprice=conn.prepareStatement("INSERT INTO device_price VALUES (?,?,?)");
+            prepareprice.setString(1, serialn);
+            prepareprice.setString(2, imeicode);
+            prepareprice.setBigDecimal(3, BigDecimal.valueOf(Double.parseDouble(buyingp)));
+            prepareprice.execute();
+            
+            
+            JOptionPane.showMessageDialog(null, "Device Details Recorded Successfully","Secure Device Inc.",JOptionPane.INFORMATION_MESSAGE);
+            deviceCount1.setText(String.valueOf(new RegisterDevice().getDeviceCount(dname)));
+            deviceCount.setText(String.valueOf(rdevice.getAlldevicesCount()));
+            getManufacturers();
+            
+            //Reset All textfields.
+            d_name.setText("");
+            manufacturer_combo.setSelectedIndex(0);
+            b_price.setText("");
+            imei.setText("");
+            sn.setText("");
+            
+            }
+            catch(SQLException ex){
+                
+                
+            }
+            
+            
+//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        } catch (SQLException ex) {
+            Logger.getLogger(DeviceRegistration.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void getManufacturers() {
+             
+        try {
+            prepare=conn.prepareStatement("SELECT DISTINCT(manufacturer) FROM device_info");
+            ResultSet rs=prepare.executeQuery();
+           while(rs.next()){
+                 String manufact=rs.getString("manufacturer");   
+                 manufacturer_combo.addItem(manufact);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(RegisterDevice.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+             
+    }
 }
