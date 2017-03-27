@@ -5,6 +5,8 @@
  */
 package business.devices;
 
+import javax.swing.JOptionPane;
+
 
 
 /**
@@ -19,6 +21,8 @@ public class DeviceRegistration extends javax.swing.JFrame {
     public DeviceRegistration() {
         initComponents();
         setLocationRelativeTo(null);
+        n_manufacturer.setVisible(false);
+        nm_btn.setVisible(false);
     }
 
     /**
@@ -44,12 +48,17 @@ public class DeviceRegistration extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        manufacturer_combo = new javax.swing.JComboBox<>();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        n_manufacturer = new javax.swing.JTextField();
+        nm_btn = new javax.swing.JButton();
+        jTextField4 = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Device Registration");
         setMinimumSize(new java.awt.Dimension(600, 500));
 
         jPanel1.setBackground(new java.awt.Color(60, 141, 188));
@@ -67,7 +76,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(93, 93, 93)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(142, Short.MAX_VALUE))
+                .addContainerGap(330, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -94,7 +103,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addContainerGap(282, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -125,7 +134,7 @@ public class DeviceRegistration extends javax.swing.JFrame {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(233, Short.MAX_VALUE)
+                .addContainerGap(421, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -153,10 +162,10 @@ public class DeviceRegistration extends javax.swing.JFrame {
 
         jLabel7.setText("Units Bought");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---Select Manufacturer---" }));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        manufacturer_combo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "---Select Manufacturer---" }));
+        manufacturer_combo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                manufacturer_comboActionPerformed(evt);
             }
         });
 
@@ -179,6 +188,28 @@ public class DeviceRegistration extends javax.swing.JFrame {
             }
         });
 
+        nm_btn.setText("Add");
+        nm_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nm_btnActionPerformed(evt);
+            }
+        });
+
+        jTextField4.setBackground(new java.awt.Color(255, 0, 255));
+        jTextField4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jTextField4.setForeground(new java.awt.Color(0, 102, 102));
+        jTextField4.setText("20");
+        jTextField4.setDisabledTextColor(new java.awt.Color(204, 0, 153));
+        jTextField4.setEnabled(false);
+        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField4ActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel3.setText("<html><u>Total Registered Units</u></html>");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -193,25 +224,40 @@ public class DeviceRegistration extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextField1)
-                    .addComponent(jComboBox1, 0, 204, Short.MAX_VALUE)
+                    .addComponent(manufacturer_combo, 0, 204, Short.MAX_VALUE)
                     .addComponent(jTextField2)
                     .addComponent(jTextField3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(n_manufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(nm_btn)
+                .addContainerGap(32, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(34, 34, 34)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(manufacturer_combo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1)
+                    .addComponent(n_manufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nm_btn))
                 .addGap(24, 24, 24)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -234,9 +280,9 @@ public class DeviceRegistration extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void manufacturer_comboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manufacturer_comboActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_manufacturer_comboActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
         // TODO add your handling code here:
@@ -247,8 +293,34 @@ public class DeviceRegistration extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        n_manufacturer.setVisible(true);
+        nm_btn.setVisible(true);       
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void nm_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nm_btnActionPerformed
+        String manuf=n_manufacturer.getText();
+        if(manuf.equals("")){
+          JOptionPane.showMessageDialog(null, "Manufacturer Field Cannot be Empty","Secure Device Inc.",JOptionPane.WARNING_MESSAGE);
+          n_manufacturer.setVisible(false);
+          nm_btn.setVisible(false);   
+        }
+        else{
+            manufacturer_combo.addItem(manuf);
+            manufacturer_combo.setSelectedItem(manuf);
+            
+            n_manufacturer.setVisible(false);
+            nm_btn.setVisible(false);  
+        }
+                
+                
+                
+                
+        
+    }//GEN-LAST:event_nm_btnActionPerformed
+
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -290,9 +362,9 @@ public class DeviceRegistration extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -305,5 +377,9 @@ public class DeviceRegistration extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JComboBox<String> manufacturer_combo;
+    private javax.swing.JTextField n_manufacturer;
+    private javax.swing.JButton nm_btn;
     // End of variables declaration//GEN-END:variables
 }

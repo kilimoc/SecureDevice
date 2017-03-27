@@ -74,7 +74,7 @@ public class BusinessRegister extends javax.swing.JFrame {
         setTitle("Business Registration");
         setPreferredSize(new java.awt.Dimension(800, 500));
 
-        jPanel1.setBackground(new java.awt.Color(60, 141, 188));
+        jPanel1.setBackground(new java.awt.Color(75, 157, 223));
         jPanel1.setPreferredSize(new java.awt.Dimension(609, 40));
 
         jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semilight", 1, 12)); // NOI18N
@@ -398,7 +398,7 @@ public class BusinessRegister extends javax.swing.JFrame {
     }
 
     public void setIcon() {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sd.media/icon.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sd.media/logo.png")));
          //To change body of generated methods, choose Tools | Templates.
     }
 

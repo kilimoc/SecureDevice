@@ -244,8 +244,5 @@ public class HomeScreen extends javax.swing.JFrame {
     private javax.swing.JPanel sidebar;
     // End of variables declaration//GEN-END:variables
 
-    private void setIcon() {
-        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/sd.media/icon.png")));
-         //To change body of generated methods, choose Tools | Templates.
-    }
+   
 }
